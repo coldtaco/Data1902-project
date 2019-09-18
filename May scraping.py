@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-driver = webdriver.Chrome("./chromedriver.exe")
+driver = webdriver.Chrome("./chromedriver")
 driver.implicitly_wait(2)
 driver.get("https://www.gov.uk/search/news-and-communications?keywords=speech&people%5B%5D=theresa-may&order=updated-newest")
 

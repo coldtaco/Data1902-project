@@ -50,10 +50,10 @@ datepicker.find_elements_by_tag_name('li')[-1].click()
 headerDiv = "transcript-header" #class
 contentDiv = "resultsblock" #id
 d = datetime.datetime(2016, 6, 1)
-links = open("./Trump speeches/links.txt", 'r').readlines()
+links = []
 
-txt = open("./Trump speeches/links.txt", 'a')
-failed = open("./Trump speeches/failed.txt", 'a')
+txt = open("./Trump speeches/passed.txt", 'w')
+failed = open("./Trump speeches/failed.txt", 'w')
 firstElement = None
 passed = 0
 def getLinks():
@@ -67,30 +67,60 @@ def getLinks():
         if l not in links:
             links.append(l)
             print(l)
-            txt.write(l+"\n")
     return elements[0]
 
-'''
 while d < datetime.datetime.now():
     enterDate(d)
     getLinks()
     d += datetime.timedelta(days=1)
-txt.close()'''
-
 
 for i,x in enumerate(links):
     try:
         driver.get(x)
-        speech = open(f'./Trump speeches/Speech{len(links)-i}','w', encoding="utf-8")
         header = driver.find_element_by_class_name(headerDiv).text.split("-")
         date = header[1].strip()
         title = header[0].strip()
+        speech = open(f'./Trump speeches/Speech{i}','w', encoding="utf-8")
         speech.write(f"{'Donald Trump'}|{title}|{date}")
+        Type = title.split(":")[0]
+        print(Type)
         content = driver.find_element_by_id(contentDiv).find_elements_by_xpath('*')
-        print(x)
-        for t in range(1,len(content)//2):
-            speech.write("\n")
-            speech.write(driver.find_element_by_name(f'seq{t}').text)
+        if Type != "Speech":
+            header = driver.find_element_by_class_name("transcript-header").text.split("-")
+            date = header[1].strip()
+            title = header[0].strip()
+            elements = driver.find_element_by_id('resultsblock').find_elements_by_xpath("*")
+            adjust = 0
+            for j in range(1,len(content)//2):
+                try:
+                    e = driver.find_element_by_name(f'seq{j+adjust}').find_element_by_xpath('..').find_element_by_xpath('..').find_element_by_xpath('..').find_element_by_xpath('..')
+                    if e.find_element_by_class_name('speaker-label').text == "Donald Trump":
+                        speech.write("\n")
+                        speech.write(driver.find_element_by_name(f'seq{j}').text)
+                except:
+                    try:
+                        adjust+=1
+                        e = driver.find_element_by_name(f'seq{j+adjust}').find_element_by_xpath('..').find_element_by_xpath('..').find_element_by_xpath('..').find_element_by_xpath('..')
+                        if e.find_element_by_class_name('speaker-label').text == "Donald Trump":
+                            speech.write("\n")
+                            speech.write(driver.find_element_by_name(f'seq{j}').text)
+                    except:
+                        traceback.print_exc()
+                        failed.write(x)
+                        continue
+            txt.write(x)
+        else:
+            try:
+                adjust = 0
+                for t in range(1,len(content)//2):
+                    speech.write("\n")
+                    speech.write(driver.find_element_by_name(f'seq{t+adjust}').text)
+                txt.write(x)
+            except:
+                adjust += 1
+                speech.write("\n")
+                speech.write(driver.find_element_by_name(f'seq{t+adjust}').text)
+                continue
         speech.close()
     except Exception as e:
         traceback.print_exc()

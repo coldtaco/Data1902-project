@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-driver = webdriver.Chrome("./chromedriver.exe")
+driver = webdriver.Chrome("./chromedriver")
 driver.get("https://www.pm.gov.au/media")
 driver.implicitly_wait(5)
 select = Select(driver.find_element_by_id('edit-field-media-type-value'))
@@ -57,5 +57,5 @@ for i,x in enumerate(links):
     speech.write(f"{'Scott Morrison'}|{title}|{date.text}")
     print(date.text)
     content = driver.find_elements_by_class_name('even')
-    for t in content:
-        speech.write(t.text)
+    speech.write("\n")
+    speech.write(content[2].text.strip())
