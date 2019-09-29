@@ -52,7 +52,8 @@ contentDiv = "resultsblock" #id
 d = datetime.datetime(2016, 6, 1)
 links = []
 
-txt = open("./Trump speeches/passed.txt", 'w')
+#txt = open("./Trump speeches/passed.txt", 'w')
+#failed links are stored for later recovery if needed
 failed = open("./Trump speeches/failed.txt", 'w')
 firstElement = None
 passed = 0
@@ -68,11 +69,13 @@ def getLinks():
             links.append(l)
             print(l)
     return elements[0]
-
-while d < datetime.datetime.now():
+    
+# go through each date and get links, as page scrolls infinitely, it is easier to ensure complete coverage by going through dates one by one
+'''while d < datetime.datetime.now():
     enterDate(d)
     getLinks()
     d += datetime.timedelta(days=1)
+'''
 
 for i,x in enumerate(links):
     try:
@@ -85,6 +88,7 @@ for i,x in enumerate(links):
         Type = title.split(":")[0]
         print(Type)
         content = driver.find_element_by_id(contentDiv).find_elements_by_xpath('*')
+        #if not speech, check if speaker is trump, else grab all relevant text
         if Type != "Speech":
             header = driver.find_element_by_class_name("transcript-header").text.split("-")
             date = header[1].strip()
@@ -93,6 +97,7 @@ for i,x in enumerate(links):
             adjust = 0
             for j in range(1,len(content)//2):
                 try:
+                    #sometimes speech blocks skip number, need to check if scraping is actually complete
                     e = driver.find_element_by_name(f'seq{j+adjust}').find_element_by_xpath('..').find_element_by_xpath('..').find_element_by_xpath('..').find_element_by_xpath('..')
                     if e.find_element_by_class_name('speaker-label').text == "Donald Trump":
                         speech.write("\n")

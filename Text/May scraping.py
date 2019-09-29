@@ -32,6 +32,7 @@ def getLinks():
         links.append(link.get_attribute("href"))
         print(link.get_attribute("href"))
     return firstElement
+#get links
 try:
     while True:
         driver.implicitly_wait(2)
@@ -43,9 +44,10 @@ except Exception as e:
     print('not found')
     traceback.print_exc()
     pass
-
+#get text from links
 for i,x in enumerate(links):
     driver.get(x)
+    #exclude unwanted formats
     if driver.find_element_by_class_name(contextDiv).text == "News story" or driver.find_element_by_class_name(contextDiv).text == "Press release":
         continue
     txt.write(x+"\n")
