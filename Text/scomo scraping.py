@@ -6,7 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-
+from os import listdir
+print(listdir())
 driver = webdriver.Chrome("./chromedriver")
 driver.get("https://www.pm.gov.au/media")
 driver.implicitly_wait(5)
@@ -21,7 +22,6 @@ WebDriverWait(driver, 10).until_not(EC.presence_of_element_located((By.CLASS_NAM
 
 dateDiv = "media-date" #class
 titleDiv = "pagetitle"#class
-
 txt = open("./Scomo speeches/links.txt", 'w')
 links = []
 firstElement = None
@@ -34,6 +34,7 @@ def getLinks():
         links.append(link.get_attribute("href"))
     return firstElement
 
+#get links
 try:
     while True:
         driver.implicitly_wait(2)
@@ -45,7 +46,7 @@ except Exception as e:
     print('not found')
     traceback.print_exc()
     pass
-
+#scrape text from each link
 for i,x in enumerate(links):
     driver.get(x)
     txt.write(x+"\n")
