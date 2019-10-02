@@ -12,7 +12,7 @@ from paragraphLemma import lemmaS
 import numpy as np
 
 #if change to false if unlemma'd form is desired
-lemma = True
+lemma = False
 df = pd.DataFrame()
 #Gets all the files in their folders and excludes unwanted ones
 mypath = "../Text"
@@ -48,5 +48,5 @@ sums = sums.drop(['Date','Title','Name'])
 sums = sums[sums > 5].reset_index()['index'].tolist()
 sums += ['Date','Title','Name']
 df = df.loc[:,sums]
-test = open(f'DTM{"lemma"if lemma else ""}.csv','w')
+test = open(f'../DTM{"lemma"if lemma else ""}.csv','w',encoding='UTF-8')
 test.write(df.to_csv(index=False))
