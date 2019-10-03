@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from selenium.webdriver.common.keys import Keys
 import datetime
+import pickle
 
 def clickable(element):
     clicked = 0
@@ -50,14 +51,14 @@ datepicker.find_elements_by_tag_name('li')[-1].click()
 headerDiv = "transcript-header" #class
 contentDiv = "resultsblock" #id
 d = datetime.datetime(2016, 6, 1)
-links = []
 
-#txt = open("./Trump speeches/passed.txt", 'w')
+txt = open("./Trump speeches/passed.txt", 'w')
 #failed links are stored for later recovery if needed
 failed = open("./Trump speeches/failed.txt", 'w')
 firstElement = None
 passed = 0
-def getLinks():
+def getLinks(date):
+    m,d,y = date.month,date.day,date.year
     elements = driver.find_element_by_class_name("infinite").find_elements_by_tag_name('small')
     if len(elements) == 0:
         return
@@ -65,19 +66,28 @@ def getLinks():
         l = x.find_element_by_tag_name('a').get_attribute('href')
         if "youtube" in l:
             continue
-        if l not in links:
-            links.append(l)
+        if ("{m:2d}/{d:2d}/{y}\n",l) not in links:
+            links.append(("{m:2d}/{d:2d}/{y}\n",l))
             print(l)
     return elements[0]
     
 # go through each date and get links, as page scrolls infinitely, it is easier to ensure complete coverage by going through dates one by one
-'''while d < datetime.datetime.now():
-    enterDate(d)
-    getLinks()
-    d += datetime.timedelta(days=1)
-'''
+try:
+    with open('trump links.pkl', 'rb') as f:
+        links = pickle.load(f)
+except:
+    print("couldn't load saves, restarting")
+    links = []
+    while d < datetime.datetime.now():
+        enterDate(d)
+        getLinks(d)
+        d += datetime.timedelta(days=1)
+    with open('trump links.pkl', 'wb') as f:
+        pickle.dump(links, f)
+    
 
-for i,x in enumerate(links):
+for i,tup in enumerate(links):
+    date,x = tup
     try:
         driver.get(x)
         header = driver.find_element_by_class_name(headerDiv).text.split("-")
