@@ -14,7 +14,9 @@ for _file in speeches:
     txt = open(_file,'r',encoding='UTF-8').readlines()
     temp = []
     for line in txt:
-        temp.append(re.sub("[\(\[].*?[\)\]]", "", line))
+        line = re.sub("[\(\[].*?[\)\]]", "", line)
+        line = re.sub("'", "", line)
+        temp.append(line)
     with open(_file,'w', encoding="utf-8") as replace:
         for line in temp:
             if 'AAP Image' in line:
