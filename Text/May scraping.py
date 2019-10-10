@@ -44,6 +44,12 @@ except Exception as e:
     print('not found')
     traceback.print_exc()
     pass
+for x in links:
+    driver.get(x)
+    if driver.find_element_by_class_name(contextDiv).text == "News story" or driver.find_element_by_class_name(contextDiv).text == "Press release":
+        continue
+    txt.write(x+'\n')
+exit()
 #get text from links
 for i,x in enumerate(links):
     driver.get(x)
