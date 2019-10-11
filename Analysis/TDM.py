@@ -13,6 +13,7 @@ import numpy as np
 
 #if change to false if unlemma'd form is desired
 lemma = False
+print(f'lemma = {lemma}')
 df = pd.DataFrame()
 #Gets all the files in their folders and excludes unwanted ones
 mypath = "../Text"
