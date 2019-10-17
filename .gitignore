@@ -7,3 +7,5 @@ chromedriver.exe
 chromedriver.exe
 chromedriver.exe
 chromedriver.exe
+*.pkl
+DTM.csv
