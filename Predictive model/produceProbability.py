@@ -17,34 +17,38 @@ folders = [join(mypath,f) for f in listdir(mypath) if not isfile(join(mypath, f)
 folders = [f for f in folders if f != ".git"]
 speeches = [join(g,f) for g in folders for f in listdir(g)  if isfile(join(g, f)) and (not "links" in f and not "failed" in f and "git" not in f)]
 i = 0
+probabilityDict = {}
 #Lemmatizes each sentence and inserts it into Document term matrix
 for _file in tqdm(speeches):
     try:
         opened = open(_file,'r', encoding="utf8").readlines()
-        labels = opened.pop(0)
-        txt = [" ".join(opened)]
-        vec = CountVectorizer(token_pattern=u"(?u)\\b\\w+\\b",ngram_range=(2,2))
-        X = vec.fit_transform(txt)
-        df_ = pd.DataFrame(np.array(X.toarray(),dtype='int32'), columns=vec.get_feature_names())
-        labs = labels.split("|")
-        df_['Name'],df_['Title'],df_['Date'] = labs[0],labs[1],labs[2]
-        df = df.append(df_,sort=True).fillna(0)
+        labels = opened.pop(0).split("|")
+        if labels[0] == 'Donald Trump':
+            txt = " ".join(opened)
+            txt = txt.replace('.',' .')
+            txt = txt.replace(',',' ,')
+            txt = txt.replace('-',' ')
+            txt = txt.replace('  ',' ')
+            txt = txt.replace('"','')
+            txt = txt.replace("'",'')
+            txt = txt.replace('\n','')
+            for front,back in zip(txt.split(" ")[0:-1],txt.split(" ")[1:]):
+                front,back = front.lower(),back.lower()
+                if not front in probabilityDict:
+                    probabilityDict[front] = {back:0}
+                if not back in probabilityDict[front]:
+                    probabilityDict[front] = {back:0}
+                probabilityDict[front][back] += 1
     except:
         print(_file)
         traceback.print_exc()
         continue
-pickle.dump(df,open('pairTDM.pkl','wb'))
 
-counts = df
-counts = counts[counts["Name"]=='Donald Trump']
-counts.drop(['Date','Name','Title'],axis=1)
-sums = counts.sum().reset_index()
-pairs = sums['index']
-print(pairs)
-dic = {}
-for pair in pairs:
-    front,back = pair.split()
-    if front not in dic:
-        dic[front] = {back : None}
-    dic[front][back] = sums[pair]
-pickle.dump(dic,open('probabilityDict.pkl','wb'))
+for key in probabilityDict:
+    toBeRemoved = []
+    for key2 in probabilityDict[key]:
+        if probabilityDict[key][key2] < 5:
+            toBeRemoved.append(key2)
+    for r in toBeRemoved:
+        del probabilityDict[key][r]
+pickle.dump(probabilityDict,open('probabilityDict.pkl','wb'))
