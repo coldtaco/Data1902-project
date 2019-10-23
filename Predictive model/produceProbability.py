@@ -37,18 +37,11 @@ for _file in tqdm(speeches):
                 if not front in probabilityDict:
                     probabilityDict[front] = {back:0}
                 if not back in probabilityDict[front]:
-                    probabilityDict[front] = {back:0}
+                    probabilityDict[front][back] = 0
                 probabilityDict[front][back] += 1
     except:
         print(_file)
         traceback.print_exc()
         continue
 
-for key in probabilityDict:
-    toBeRemoved = []
-    for key2 in probabilityDict[key]:
-        if probabilityDict[key][key2] < 5:
-            toBeRemoved.append(key2)
-    for r in toBeRemoved:
-        del probabilityDict[key][r]
 pickle.dump(probabilityDict,open('probabilityDict.pkl','wb'))
