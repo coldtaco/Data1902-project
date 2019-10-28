@@ -22,6 +22,7 @@ def getWordVector(name,df):
     sums = [s for s in sums if not re.search('[0-9]',s)]
     dictionary  = {}
     rdict = {}
+    print(len(sums))
     for i,x in enumerate(sums):
         dictionary[x.lower()] = i+1
         rdict[str(i+1)] = x.lower()
@@ -31,7 +32,7 @@ def getWordVector(name,df):
     rdict[len(dictionary)+2] = x.lower()
     open('vectorLength.txt','a').write(f'{name},{len(dictionary)}')
     pickle.dump(dictionary,open(f'{name} dict.pkl','wb'))
-    pickle.dump(dictionary,open(f'{name} rdict.pkl','wb'))
+    pickle.dump(rdict,open(f'{name} rdict.pkl','wb'))
     return dictionary
 
 def vectorize(directory,dictionary):
